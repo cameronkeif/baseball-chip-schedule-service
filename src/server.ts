@@ -2,8 +2,10 @@ import http from 'http';
 import express, { Express } from 'express';
 import morgan from 'morgan';
 import routes from './routes/scheduleRoutes';
+import dotenv from 'dotenv';
 
 const router: Express = express();
+dotenv.config();
 
 /** Logging */
 router.use(morgan('dev'));

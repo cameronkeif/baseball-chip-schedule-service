@@ -2,6 +2,7 @@ import { MlbApiTeam } from "./MlbApiTeam";
 
 export type MlbApiGame = {
     officialDate: string,
+    gameDate: string,
     status: {
         detailedState: string,
     },
