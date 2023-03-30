@@ -12,7 +12,7 @@ import MlbDay from '../types/MlbDay';
 const dateParameterRegex: RegExp = /^\d{4}-\d{2}-\d{2}$/;
 
 const getSchedule = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
-    const { startDate, endDate } = req.query;
+    const { startDate, endDate, includeOdds } = req.query;
 
     if (!startDate) {
         return res.status(400).json({ message: "startDate is required" })
@@ -26,8 +26,14 @@ const getSchedule = async (req: Request, res: Response, next: NextFunction): Pro
         return res.status(400).json({ message: "endDate must be on or after startDate" });
     }
 
+    if (includeOdds) {
+        if (typeof includeOdds !== 'string' || (includeOdds !== 'true' && includeOdds !== 'false')) {
+            return res.status(400).json({ message: 'includeOdds must be either "true" or "false" if included' });
+        }
+    }
+
     const schedule = await getMlbSchedule(startDate, endDate);
-    const odds = await getMlbOdds();
+    const odds = includeOdds === 'true' ? await getMlbOdds() : [];
 
     return res.status(200).json(normalizeScheduleData(schedule, odds));
 };
