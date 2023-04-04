@@ -63,7 +63,18 @@ const normalizeScheduleData = (schedule: Array<MlbApiDay>, odds: Array<MlbGameOd
 
             odds.forEach((odd) => {
                 if (odd.commence_time === game.gameDate && odd.home_team === homeTeam && odd.away_team === awayTeam) {
-                    game.odds = odd.bookmakers[0].markets[0].outcomes; // DraftKings
+                    const [outcome1, outcome2] = odd.bookmakers[0].markets[0].outcomes; // DraftKings
+                    const outcome1Response = {
+                        name: outcome1.name,
+                        price: outcome1.price > 0 ? `+${outcome1.price}` : outcome1.price.toString(),
+                    }
+
+                    const outcome2Response = {
+                        name: outcome2.name,
+                        price: outcome2.price > 0 ? `+${outcome2.price}` : outcome2.price.toString(),
+                    }
+
+                    game.odds = [outcome1Response, outcome2Response];
                 }
             });
 
