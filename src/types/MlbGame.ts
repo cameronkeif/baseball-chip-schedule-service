@@ -1,7 +1,7 @@
-import MlbApiGame from "./MlbApiGame";
+import MlbApiGame from './MlbApiGame';
 
 export type MlbGame = MlbApiGame & {
-    odds?: Array<{ name: string, price: string }>
+  odds?: Array<{ name: string; price: string }>;
 };
 
 export default MlbGame;
