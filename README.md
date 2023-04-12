@@ -17,4 +17,4 @@ GET /schedule
 
 ## How to run
 
-`npm run dev` will stand this up on port 6060 by default. You can also use the docker file.
+`npm run dev` will stand this up by itself on port 6060 by default. You can also use the Dockerfile to run this in Docker.
