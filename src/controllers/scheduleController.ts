@@ -81,6 +81,7 @@ const normalizeScheduleData = (
   return result;
 };
 
+
 const getSchedule = async (req: Request, res: Response): Promise<Response> => {
   const { startDate, endDate, includeOdds } = req.query;
 
