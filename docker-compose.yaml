@@ -6,3 +6,17 @@ services:
       - "6060:6060"
     env_file:
       - .env
+    depends_on:
+      - baseball-chip-weather-service
+  baseball-chip-weather-service:
+    image: baseball-chip-weather-service
+    ports:
+      - 6061:6060
+    env_file:
+      - .env
+    depends_on:
+      - redis
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
