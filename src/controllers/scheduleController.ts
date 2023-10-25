@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import pick from 'lodash.pick';
-import { DateTime } from "luxon";
+import { DateTime } from 'luxon';
 import { removeKey } from '../utils';
 import teamAbbreviations from '../utils/teamAbbreviations';
 import { getMlbSchedule } from '../clients/MlbApiClient';
@@ -16,13 +16,17 @@ const dateParameterRegex = /^\d{4}-\d{2}-\d{2}$/;
 
 /**
  * Adds a GameOdd to the oddsMap, or modifies an existing entry to be a tuple of two GameOdds (for a double-header)
- * 
+ *
  * @param oddsMap The odds map to modify
  * @param odds The odds object to insert
  * @param commenceTime the Date representing the start time of the game
  */
-const processOdds = (oddsMap: Map<string, Map<number, GameOdds | [GameOdds, GameOdds]>>, odds: GameOdds, commenceTime: Date) => {
-  const timeKey = DateTime.fromJSDate(commenceTime).ordinal // Only use the date as the key - the MLB API is inconsistent with start times for double headers
+const processOdds = (
+  oddsMap: Map<string, Map<number, GameOdds | [GameOdds, GameOdds]>>,
+  odds: GameOdds,
+  commenceTime: Date
+) => {
+  const timeKey = DateTime.fromJSDate(commenceTime).ordinal; // Only use the date as the key - the MLB API is inconsistent with start times for double headers
 
   const existingOdds = oddsMap?.get(odds.name)?.get(timeKey);
   if (existingOdds && !Array.isArray(existingOdds)) {
@@ -30,21 +34,26 @@ const processOdds = (oddsMap: Map<string, Map<number, GameOdds | [GameOdds, Game
   } else {
     oddsMap?.get(odds.name)?.set(timeKey, odds);
   }
-}
+};
 
 /**
  * Constructs a map of game odds from the raw API response, mapped as <Team name> -> ordinal date -> odds.
  * For example, "Detroit Tigers" -> 110 -> <game odds or tuple of 2 game odds>
- * 
+ *
  * @param odds The odds API response
  * @returns A map representing all of the game odds
  */
-const buildOddsMap = (odds: Array<TheOddsGameOdds>): Map<string, Map<number, GameOdds | [GameOdds, GameOdds]>> => {
+const buildOddsMap = (
+  odds: Array<TheOddsGameOdds>
+): Map<string, Map<number, GameOdds | [GameOdds, GameOdds]>> => {
   // Maps team name -> odd.commence_time (as ordinal) -> the odds object to be put into the API response.
-  const oddsMap = new Map<string, Map<number, GameOdds | [GameOdds, GameOdds]>>();
+  const oddsMap = new Map<
+    string,
+    Map<number, GameOdds | [GameOdds, GameOdds]>
+  >();
 
   teamAbbreviations.forEach((teamAbbr, teamName) => {
-    oddsMap.set(teamName, new Map<number, GameOdds | [GameOdds, GameOdds]>);
+    oddsMap.set(teamName, new Map<number, GameOdds | [GameOdds, GameOdds]>());
   });
 
   odds.forEach((odd) => {
@@ -52,25 +61,21 @@ const buildOddsMap = (odds: Array<TheOddsGameOdds>): Map<string, Map<number, Gam
     const odds1 = {
       name: outcome1.name,
       price:
-        outcome1.price > 0
-          ? `+${outcome1.price}`
-          : outcome1.price.toString(),
+        outcome1.price > 0 ? `+${outcome1.price}` : outcome1.price.toString(),
     };
 
     const odds2 = {
       name: outcome2.name,
       price:
-        outcome2.price > 0
-          ? `+${outcome2.price}`
-          : outcome2.price.toString(),
+        outcome2.price > 0 ? `+${outcome2.price}` : outcome2.price.toString(),
     };
-    
+
     processOdds(oddsMap, odds1, new Date(odd.commence_time));
     processOdds(oddsMap, odds2, new Date(odd.commence_time));
   });
 
   return oddsMap;
-}
+};
 
 /**
  * Normalizes the MLB API data to look the way we want.
@@ -112,12 +117,17 @@ const normalizeScheduleData = (
       // home and away odds will always be the same type - it's not possible for homeOdds to be a tuple and awayOdds to be a single object
       if (Array.isArray(homeOdds) && Array.isArray(awayOdds)) {
         const gameIndex = doubleHeaderFlag ? 1 : 0;
-        game.odds = [homeOdds[gameIndex], awayOdds[gameIndex]]
-      } else if (homeOdds && awayOdds && !Array.isArray(homeOdds) && !Array.isArray(awayOdds)) {
-        game.odds = [homeOdds, awayOdds]
+        game.odds = [homeOdds[gameIndex], awayOdds[gameIndex]];
+      } else if (
+        homeOdds &&
+        awayOdds &&
+        !Array.isArray(homeOdds) &&
+        !Array.isArray(awayOdds)
+      ) {
+        game.odds = [homeOdds, awayOdds];
       }
 
-      if (game.doubleHeader === "Y") {
+      if (game.doubleHeader === 'Y') {
         doubleHeaderFlag = !doubleHeaderFlag;
       } else {
         doubleHeaderFlag = false;
@@ -133,7 +143,6 @@ const normalizeScheduleData = (
 
   return result;
 };
-
 
 const getSchedule = async (req: Request, res: Response): Promise<Response> => {
   const { startDate, endDate, includeOdds } = req.query;
