@@ -1,4 +1,5 @@
 const teamAbbreviations = new Map<string, string>([
+    ['Athletics', 'ATH'],  
     ["Arizona Diamondbacks", "ARI"],
     ["Atlanta Braves", "ATL"],
     ["Baltimore Orioles", "BAL"],
@@ -18,7 +19,6 @@ const teamAbbreviations = new Map<string, string>([
     ["Minnesota Twins", "MIN"],
     ["New York Yankees", "NYY"],
     ["New York Mets", "NYM"],
-    ["Oakland Athletics", "OAK"],
     ["Philadelphia Phillies", "PHI"],
     ["Pittsburgh Pirates", "PIT"],
     ["San Diego Padres", "SD"],
